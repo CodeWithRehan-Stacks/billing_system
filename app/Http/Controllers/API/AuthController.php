@@ -172,7 +172,7 @@ class AuthController extends Controller
                 'last_name'     => 'sometimes|string|max:255',
                 'user_name'     => 'sometimes|string|unique:users,user_name,' . $user->id,
                 'email'         => 'sometimes|email|unique:users,email,' . $user->id,
-                'password'      => 'sometimes|min:6',
+                'password'      => 'sometimes|min:6|confirmed',
                 'date_of_birth' => 'nullable|date',
             ];
 
