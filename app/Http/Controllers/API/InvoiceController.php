@@ -2,64 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\invoice;
+use App\Models\FeeInvoice;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    //  Get all invoices
     public function index()
     {
-        //
+        return response()->json(
+            FeeInvoice::latest()->paginate(10)
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Store new invoice
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'student_id' => 'required|integer',
+            'amount' => 'required|numeric|min:0',
+            'status' => 'required|string',
+            'due_date' => 'required|date',
+        ]);
+
+        $invoice = FeeInvoice::create($validated);
+
+        return response()->json([
+            'message' => 'Invoice created successfully',
+            'data' => $invoice
+        ], 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(invoice $invoice)
+    // Show single invoice
+    public function show($id)
     {
-        //
+        $invoice = FeeInvoice::findOrFail($id);
+
+        return response()->json($invoice);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(invoice $invoice)
+    //  Update invoice
+    public function update(Request $request, $id)
     {
-        //
+        $invoice = FeeInvoice::findOrFail($id);
+
+        $validated = $request->validate([
+            'student_id' => 'sometimes|integer',
+            'amount' => 'sometimes|numeric|min:0',
+            'status' => 'sometimes|string',
+            'due_date' => 'sometimes|date',
+        ]);
+
+        $invoice->update($validated);
+
+        return response()->json([
+            'message' => 'Invoice updated successfully',
+            'data' => $invoice
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, invoice $invoice)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(invoice $invoice)
-    {
-        //
-    }
 }

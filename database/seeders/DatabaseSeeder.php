@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Super Admin
+
         User::factory()->create([
             'first_name' => 'Admin',
             'last_name' => 'User',
@@ -21,6 +21,18 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@school.com',
             'password' => Hash::make('password'),
         ]);
+
+        for ($i = 1; $i <= 10; $i++) {
+            User::factory()->create([
+                'first_name' => 'User' . $i,
+                'last_name' => 'Test',
+                'user_name' => 'user' . $i,
+                'email' => "user{$i}@school.com",
+                'password' => Hash::make('password'),
+            ]);
+        }
+        // Create 10 normal users
+        User::factory(10)->create();
 
         $this->call([
             FeeStructureSeeder::class,
