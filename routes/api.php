@@ -1,19 +1,17 @@
 <?php
 
-use App\Http\Controllers\API\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\FeeInvoiceController;
+use App\Http\Controllers\FeePaymentController;
+use App\Http\Controllers\ReceiptController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'show']);
-    Route::put('/user', [AuthController::class, 'update']);
-});
+Route::apiResource('students', StudentController::class);
+Route::apiResource('invoices', FeeInvoiceController::class)->only(['index', 'show']);
+Route::apiResource('payments', FeePaymentController::class)->only(['index', 'store']);
+Route::get('payments/{payment}/receipt', [ReceiptController::class, 'generateReceipt']);
