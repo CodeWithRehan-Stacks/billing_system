@@ -1,0 +1,16 @@
+/* Hide the default SVG logo and any default text */
+.nova-logo svg, .nova-logo span, .nova-logo h1, .nova-logo h2, .nova-logo h3 {
+    display: none !important;
+}
+
+/* Set the PNG as the background of the logo container */
+.nova-logo {
+    background-image: url('../img/logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: left center;
+    min-height: 40px;
+    width: 150px;
+    display: block !important;
+    color: transparent !important;
+}

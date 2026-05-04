@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FeePayment;
+use App\Models\FeeInvoice;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReceiptController extends Controller
 {
-    public function generateReceipt($paymentId)
+    public function generateReceipt($invoiceId)
     {
-        $payment = FeePayment::with(['invoice.student', 'invoice.items'])->findOrFail($paymentId);
+        $invoice = FeeInvoice::with(['student', 'items'])->findOrFail($invoiceId);
 
         $data = [
-            'payment' => $payment,
-            'student' => $payment->invoice->student,
-            'invoice' => $payment->invoice,
+            'student' => $invoice->student,
+            'invoice' => $invoice,
         ];
 
         $pdf = Pdf::loadView('receipts.pdf', $data);
 
-        return $pdf->download('receipt-' . str_pad($payment->id, 5, '0', STR_PAD_LEFT) . '.pdf');
+        return $pdf->download('invoice-' . str_pad($invoice->id, 5, '0', STR_PAD_LEFT) . '.pdf');
     }
 }

@@ -10,9 +10,8 @@ class Student extends Model
     use HasFactory;
 
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'phone', 'date_of_birth',
-        'gender', 'address', 'class', 'section', 'roll_number',
-        'admission_date', 'status'
+        'name', 'father_name', 'roll_number', 'class', 'section', 
+        'phone', 'address', 'admission_date', 'status'
     ];
 
     public function invoices()

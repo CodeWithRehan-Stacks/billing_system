@@ -41,7 +41,8 @@ class InvoiceGenerationService
                 $invoice = FeeInvoice::create([
                     'invoice_number' => 'INV-' . date('Ymd') . '-' . Str::upper(Str::random(5)),
                     'student_id' => $student->id,
-                    'month' => $currentMonth,
+                    'month' => Carbon::now()->format('F'),
+                    'year' => Carbon::now()->format('Y'),
                     'issue_date' => $issueDate,
                     'due_date' => $dueDate,
                     'total_amount' => $totalAmount,

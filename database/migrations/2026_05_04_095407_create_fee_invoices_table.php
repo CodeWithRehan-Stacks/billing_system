@@ -12,16 +12,14 @@ return new class extends Migration
             $table->id();
             $table->string('invoice_number')->unique();
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
-            $table->string('month'); // e.g., January 2026
+            $table->string('month'); // e.g., January
+            $table->string('year'); // e.g., 2026
             $table->date('issue_date');
             $table->date('due_date');
             $table->decimal('total_amount', 10, 2);
             $table->decimal('paid_amount', 10, 2)->default(0);
-            $table->decimal('discount', 10, 2)->default(0);
             $table->decimal('late_fee', 10, 2)->default(0);
             $table->enum('status', ['pending', 'partial', 'paid', 'overdue'])->default('pending');
-            $table->string('late_fee_type')->nullable(); // fixed or percentage
-            $table->decimal('late_fee_value', 10, 2)->nullable();
             $table->boolean('late_fee_applied')->default(false);
             $table->timestamps();
         });

@@ -1,5 +1,11 @@
 <?php
 
+use Illuminate\Http\Middleware\CheckResponseForModifications;
+use Laravel\Nova\Actions\ActionResource;
+use Laravel\Nova\Http\Middleware\Authenticate;
+use Laravel\Nova\Http\Middleware\Authorize;
+use Laravel\Nova\Http\Middleware\HandleInertiaRequests;
+
 return [
 
     /*
@@ -26,7 +32,7 @@ return [
     |
     */
 
-    'name' => env('NOVA_APP_NAME', env('APP_NAME')),
+    'name' => 'Billing App',
 
     /*
     |--------------------------------------------------------------------------
@@ -52,7 +58,7 @@ return [
     |
     */
 
-    'path' => env('NOVA_PATH', '/nova'),
+    'path' => env('NOVA_PATH', 'admin'),
 
     /*
     |--------------------------------------------------------------------------
@@ -65,7 +71,7 @@ return [
     |
     */
 
-    'guard' => env('NOVA_GUARD', null),
+    'guard' => env('NOVA_GUARD', 'web'),
 
     /*
     |--------------------------------------------------------------------------
@@ -93,21 +99,21 @@ return [
 
     'middleware' => [
         'web',
-        \Laravel\Nova\Http\Middleware\HandleInertiaRequests::class,
+        HandleInertiaRequests::class,
         'nova:serving',
     ],
 
     'api_middleware' => [
         'nova',
-        \Laravel\Nova\Http\Middleware\Authenticate::class,
+        Authenticate::class,
         // \Laravel\Nova\Http\Middleware\AuthenticateSession::class,
         // \Laravel\Nova\Http\Middleware\EnsureEmailIsVerified::class,
-        \Laravel\Nova\Http\Middleware\Authorize::class,
+        Authorize::class,
     ],
 
     'asset_middleware' => [
         'nova:api',
-        \Illuminate\Http\Middleware\CheckResponseForModifications::class,
+        CheckResponseForModifications::class,
     ],
 
     /*
@@ -147,7 +153,7 @@ return [
     |
     */
 
-    'currency' => 'USD',
+    'currency' => 'PKR',
 
     /*
     |--------------------------------------------------------------------------
@@ -161,15 +167,9 @@ return [
     |
     */
 
-    // 'brand' => [
-    //     'logo' => resource_path('/img/example-logo.svg'),
-
-    //     'colors' => [
-    //         "400" => "24, 182, 155, 0.5",
-    //         "500" => "24, 182, 155",
-    //         "600" => "24, 182, 155, 0.75",
-    //     ]
-    // ],
+    'brand' => [
+        // 'logo' => public_path('img/logo.png'),
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -183,7 +183,7 @@ return [
     */
 
     'actions' => [
-        'resource' => \Laravel\Nova\Actions\ActionResource::class,
+        'resource' => ActionResource::class,
     ],
 
     /*
