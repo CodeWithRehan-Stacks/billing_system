@@ -10,7 +10,7 @@ class RevenueExpected extends Value
 {
     public function name(): string
     {
-        return 'Expected Revenue (Total Invoiced)';
+        return 'Expected Revenue';
     }
 
     public function calculate(NovaRequest $request): \Laravel\Nova\Metrics\ValueResult

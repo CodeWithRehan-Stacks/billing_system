@@ -10,7 +10,7 @@ class TotalRevenue extends Value
 {
     public function name(): string
     {
-        return 'Total Revenue (This Month)';
+        return 'Total Revenue';
     }
 
     public function calculate(NovaRequest $request): \Laravel\Nova\Metrics\ValueResult
