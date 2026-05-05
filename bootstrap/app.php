@@ -15,5 +15,16 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->reportable(function (\Throwable $e) {
+            try {
+                \App\Models\ErrorLog::create([
+                    'message'     => $e->getMessage(),
+                    'level'       => 'error',
+                    'file'        => $e->getFile(),
+                    'line'        => $e->getLine(),
+                    'stack_trace' => $e->getTraceAsString(),
+                    'user_id'     => auth()->check() ? auth()->id() : null,
+                ]);
+            } catch (\Exception $ex) {}
+        });
     })->create();
