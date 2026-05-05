@@ -55,17 +55,19 @@ class User extends Authenticatable
         $this->attributes['last_name']  = $parts[1] ?? '';
     }
 
-    public function isSuperAdmin(): bool
+    // app/Models/User.php
+
+    public function isSuperAdmin()
     {
-        return $this->role === 'super_admin';
+        return $this->role === 'superadmin';
     }
 
-    public function isSchoolAdmin(): bool
+    public function isSchoolAdmin()
     {
         return $this->role === 'school_admin';
     }
 
-    public function isWorker(): bool
+    public function isWorker()
     {
         return $this->role === 'worker';
     }

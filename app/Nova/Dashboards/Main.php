@@ -3,10 +3,9 @@
 namespace App\Nova\Dashboards;
 
 use App\Nova\Metrics\ActiveStudents;
-use App\Nova\Metrics\InvoiceStatusPartition;
-use App\Nova\Metrics\OverdueInvoices;
 use App\Nova\Metrics\PendingInvoices;
 use App\Nova\Metrics\RevenueByMonth;
+use App\Nova\Metrics\RevenueExpected;
 use App\Nova\Metrics\TotalInvoices;
 use App\Nova\Metrics\TotalRevenue;
 use App\Nova\Metrics\TotalStudents;
@@ -16,30 +15,52 @@ class Main extends Dashboard
 {
     public function name(): string
     {
-        return 'School Fee Dashboard';
+        return 'Dashboard';
     }
 
     /**
      * Get the cards for the dashboard.
-     *
-     * @return array<int, \Laravel\Nova\Card>
      */
     public function cards(): array
     {
+        $user = request()->user();
+
         return [
-            // Row 1 — Student & Revenue KPIs
+
             TotalStudents::make()->width('1/3'),
             TotalRevenue::make()->width('1/3'),
-            \App\Nova\Metrics\RevenueExpected::make()->width('1/3'),
+            RevenueExpected::make()->width('1/3'),
 
-            // Row 2 — Collections & Status
-            PendingInvoices::make()->width('1/4'),
-            OverdueInvoices::make()->width('1/4'),
-            InvoiceStatusPartition::make()->width('1/2'),
+            TotalInvoices::make()->width('1/2'),
+            ...$this->roleCards($user),
+            RevenueByMonth::make()->width('full'),
 
-            // Row 3 — Trends
-            RevenueByMonth::make()->width('2/3'),
-            TotalInvoices::make()->width('1/3'),
+
+        ];
+    }
+
+    /**
+     * Role-based cards
+     */
+    protected function roleCards($user): array
+    {
+        if (! $user) {
+            return [];
+        }
+        if ($user->role === 'superadmin') {
+            return [
+                ActiveStudents::make()->width('1/3'),
+            ];
+        }
+
+        if ($user->role === 'school_admin') {
+            return [
+                ActiveStudents::make()->width('1/3'),
+            ];
+        }
+
+        return [
+            PendingInvoices::make()->width('1/2'),
         ];
     }
 }

@@ -19,7 +19,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
     public function boot(): void
     {
         parent::boot();
-
+        Nova::style('custom-nova', resource_path('css/nova/custom.css'));
+        Nova::script('custom-nova', resource_path('js/nova/custom.js'));
     }
 
     /**
@@ -80,6 +81,8 @@ class NovaServiceProvider extends NovaApplicationServiceProvider
      */
     public function tools(): array
     {
-        return [];
+        return [
+            
+        ];
     }
 }
