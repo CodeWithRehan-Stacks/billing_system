@@ -2,6 +2,7 @@
 
 namespace App\Nova;
 
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
@@ -67,6 +68,20 @@ class School extends Resource
             HasMany::make('Students'),
             HasMany::make('Invoices', 'invoices', FeeInvoice::class),
         ];
+    }
+
+    public static function indexQuery(NovaRequest $request, Builder $query): Builder
+    {
+        if ($request->user()->isSuperAdmin()) {
+            return $query;
+        }
+
+        return $query->where('id', $request->user()->school_id);
+    }
+
+    public static function availableForNavigation(Request $request)
+    {
+        return $request->user()->isSuperAdmin() || $request->user()->isSchoolAdmin();
     }
 
     /**

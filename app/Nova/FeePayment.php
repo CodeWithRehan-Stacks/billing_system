@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use App\Nova\Actions\GenerateReceiptPdf;
 use App\Nova\Filters\PaymentMethodFilter;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Currency;
 use Laravel\Nova\Fields\Date;
@@ -37,6 +38,11 @@ class FeePayment extends Resource
     {
         return [
             ID::make()->sortable(),
+
+            BelongsTo::make('School', 'school', School::class)
+                ->sortable()
+                ->rules('required')
+                ->canSee(fn ($request) => $request->user()->isSuperAdmin()),
 
             BelongsTo::make('Invoice', 'invoice', FeeInvoice::class)
                 ->searchable()
@@ -76,6 +82,15 @@ class FeePayment extends Resource
                 ->nullable()
                 ->hideFromIndex(),
         ];
+    }
+
+    public static function indexQuery(NovaRequest $request, Builder $query): Builder
+    {
+        if ($request->user()->isSuperAdmin()) {
+            return $query;
+        }
+
+        return $query->where('school_id', $request->user()->school_id);
     }
 
     public function cards(NovaRequest $request): array

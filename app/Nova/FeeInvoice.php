@@ -6,6 +6,7 @@ use App\Nova\Actions\MarkAsPaid;
 use App\Nova\Actions\MarkAsOverdue;
 use App\Nova\Filters\InvoiceMonthFilter;
 use App\Nova\Filters\InvoiceStatusFilter;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Laravel\Nova\Fields\Badge;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Currency;
@@ -46,7 +47,8 @@ class FeeInvoice extends Resource
 
             BelongsTo::make('School', 'school', School::class)
                 ->sortable()
-                ->rules('required'),
+                ->rules('required')
+                ->canSee(fn ($request) => $request->user()->isSuperAdmin()),
 
             Text::make('Invoice Number', 'invoice_number')
                 ->sortable()
@@ -136,6 +138,15 @@ class FeeInvoice extends Resource
 
             HasMany::make('Payments', 'payments', FeePayment::class),
         ];
+    }
+
+    public static function indexQuery(NovaRequest $request, Builder $query): Builder
+    {
+        if ($request->user()->isSuperAdmin()) {
+            return $query;
+        }
+
+        return $query->where('school_id', $request->user()->school_id);
     }
 
     public function cards(NovaRequest $request): array

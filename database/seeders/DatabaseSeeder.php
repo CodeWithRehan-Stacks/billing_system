@@ -14,37 +14,73 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create a default school
-        $school = School::create([
+        // 1. Create Super Admin
+        User::create([
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+            'user_name' => 'superadmin',
+            'email' => 'super@system.com',
+            'password' => Hash::make('password'),
+            'role' => 'super_admin',
+            'school_id' => null, // Super admins aren't tied to a specific school
+        ]);
+
+        // 2. Create Schools
+        $school1 = School::create([
             'name' => 'Green Valley Academy',
             'subdomain' => 'greenvalley',
             'address' => '123 Education St, Lahore',
             'status' => 'active'
         ]);
 
-        // Create Admin User for this school
+        $school2 = School::create([
+            'name' => 'Beacon House School',
+            'subdomain' => 'beacon',
+            'address' => '456 Knowledge Ave, Karachi',
+            'status' => 'active'
+        ]);
+
+        // 3. Create School Admins
         User::create([
-            'first_name' => 'Admin',
-            'last_name' => 'User',
-            'user_name' => 'admin',
-            'email' => 'admin@school.com',
+            'first_name' => 'GV',
+            'last_name' => 'Admin',
+            'user_name' => 'gvadmin',
+            'email' => 'admin@greenvalley.com',
             'password' => Hash::make('password'),
-            'school_id' => $school->id,
+            'school_id' => $school1->id,
             'role' => 'school_admin'
         ]);
 
-        // Create some more users for this school
-        for ($i = 1; $i <= 5; $i++) {
-            User::create([
-                'first_name' => 'User' . $i,
-                'last_name' => 'Staff',
-                'user_name' => 'user' . $i,
-                'email' => "user{$i}@school.com",
-                'password' => Hash::make('password'),
-                'school_id' => $school->id,
-                'role' => 'accountant'
-            ]);
-        }
+        User::create([
+            'first_name' => 'Beacon',
+            'last_name' => 'Admin',
+            'user_name' => 'beaconadmin',
+            'email' => 'admin@beacon.com',
+            'password' => Hash::make('password'),
+            'school_id' => $school2->id,
+            'role' => 'school_admin'
+        ]);
+
+        // 4. Create School Workers
+        User::create([
+            'first_name' => 'GV',
+            'last_name' => 'Worker',
+            'user_name' => 'gvworker',
+            'email' => 'worker@greenvalley.com',
+            'password' => Hash::make('password'),
+            'school_id' => $school1->id,
+            'role' => 'worker'
+        ]);
+
+        User::create([
+            'first_name' => 'Beacon',
+            'last_name' => 'Worker',
+            'user_name' => 'beaconworker',
+            'email' => 'worker@beacon.com',
+            'password' => Hash::make('password'),
+            'school_id' => $school2->id,
+            'role' => 'worker'
+        ]);
 
         $this->call([
             StudentSeeder::class,

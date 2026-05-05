@@ -6,6 +6,8 @@ use App\Nova\Actions\ActivateStudent;
 use App\Nova\Actions\DeactivateStudent;
 use App\Nova\Filters\StudentClassFilter;
 use App\Nova\Filters\StudentStatusFilter;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Badge;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\HasMany;
@@ -138,6 +140,20 @@ class Student extends Resource
 
             HasMany::make('Invoices', 'invoices', FeeInvoice::class),
         ];
+    }
+
+    public static function indexQuery(NovaRequest $request, Builder $query): Builder
+    {
+        if ($request->user()->isSuperAdmin()) {
+            return $query;
+        }
+
+        return $query->where('school_id', $request->user()->school_id);
+    }
+
+    public static function availableForNavigation(Request $request)
+    {
+        return true; // All roles have access to students, but data is filtered
     }
 
     public function cards(NovaRequest $request): array

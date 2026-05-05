@@ -54,4 +54,19 @@ class User extends Authenticatable
         $this->attributes['first_name'] = $parts[0] ?? '';
         $this->attributes['last_name']  = $parts[1] ?? '';
     }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super_admin';
+    }
+
+    public function isSchoolAdmin(): bool
+    {
+        return $this->role === 'school_admin';
+    }
+
+    public function isWorker(): bool
+    {
+        return $this->role === 'worker';
+    }
 }
