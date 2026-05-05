@@ -3,40 +3,48 @@
 namespace App\Services;
 
 use App\Models\FeeInvoice;
+use App\Models\FeePayment;
 use App\Models\Receipt;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class ReceiptService
 {
     /**
-     * Generate a professional PDF receipt for a paid invoice.
+     * Generate a professional PDF receipt for a payment.
      */
-    public function generateForInvoice(FeeInvoice $invoice): Receipt
+    public function generateReceipt(FeePayment $payment)
     {
-        // Load the view with invoice data
-        $pdf = Pdf::loadView('pdf.receipt', [
-            'invoice' => $invoice,
-            'school' => $invoice->school,
-            'student' => $invoice->student,
-            'payment' => $invoice->payments()->latest()->first(),
-        ]);
+        $invoice = $payment->invoice;
+        $school = $invoice->school;
 
-        // Define file name and path
-        $fileName = 'receipt_' . $invoice->invoice_number . '_' . time() . '.pdf';
-        $filePath = 'receipts/' . $fileName;
+        $receiptNumber = 'REC-' . $school->id . '-' . date('Ymd') . '-' . str_pad($payment->id, 5, '0', STR_PAD_LEFT);
 
-        // Store PDF in local/S3 storage
-        Storage::disk('public')->put($filePath, $pdf->output());
-
-        // Create receipt record
-        return Receipt::create([
-            'school_id' => $invoice->school_id,
+        $receipt = Receipt::create([
+            'school_id' => $school->id,
             'fee_invoice_id' => $invoice->id,
-            'receipt_number' => 'REC-' . strtoupper(Str::random(8)),
-            'file_path' => $filePath,
-            'generated_at' => now(),
+            'receipt_number' => $receiptNumber,
+            'file_path' => 'temporary', // Placeholder
+            'generated_at' => Carbon::now(),
         ]);
+
+        $pdf = Pdf::loadView('pdfs.receipt', [
+            'receipt' => $receipt,
+            'payment' => $payment
+        ]);
+
+        $fileName = 'receipts/' . $receiptNumber . '.pdf';
+        
+        // Ensure directory exists
+        if (!Storage::disk('public')->exists('receipts')) {
+            Storage::disk('public')->makeDirectory('receipts');
+        }
+
+        Storage::disk('public')->put($fileName, $pdf->output());
+
+        $receipt->update(['file_path' => $fileName]);
+
+        return $receipt;
     }
 }

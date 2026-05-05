@@ -2,57 +2,60 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Http;
+use App\Models\FeeInvoice;
+use App\Models\Student;
 use Illuminate\Support\Facades\Log;
 
 class WhatsAppService
 {
     /**
-     * Send a WhatsApp message.
-     * 
-     * Note: This is a placeholder for actual integration (e.g. Twilio, UltraMsg, etc.)
+     * Send invoice notification via WhatsApp.
      */
-    public function sendMessage(string $number, string $message): bool
-    {
-        Log::info("WhatsApp message sent to {$number}: {$message}");
-
-        // Example for a generic API
-        /*
-        $response = Http::post('https://api.whatsapp-gateway.com/send', [
-            'token' => config('services.whatsapp.token'),
-            'to' => $number,
-            'body' => $message,
-        ]);
-
-        return $response->successful();
-        */
-
-        return true; 
-    }
-
-    /**
-     * Send invoice notification to parents.
-     */
-    public function sendInvoiceNotification($invoice): void
+    public function sendInvoiceNotification(FeeInvoice $invoice)
     {
         $student = $invoice->student;
-        $message = "Dear Parent,\n\n" .
-                   "Your child’s fee invoice for {$invoice->month} {$invoice->year} is generated.\n\n" .
-                   "Student: {$student->name}\n" .
-                   "Amount: {$invoice->total_amount} PKR\n" .
-                   "Due Date: {$invoice->due_date}\n\n" .
-                   "Please pay before due date to avoid late fee.\n\n" .
-                   "Thank you.\n" .
-                   "{$invoice->school->name}";
+        $school = $invoice->school;
 
-        // Send to Father (Primary)
-        if ($student->father_whatsapp) {
-            $this->sendMessage($student->father_whatsapp, $message);
-        }
+        $message = "Dear Parent,\n\n"
+                 . "Your child’s fee invoice for {$invoice->month} {$invoice->year} is generated.\n\n"
+                 . "Student: {$student->name}\n"
+                 . "Amount: " . number_format($invoice->total_amount, 2) . " PKR\n"
+                 . "Due Date: " . \Carbon\Carbon::parse($invoice->due_date)->format('d F Y') . "\n\n"
+                 . "Please pay before due date to avoid late fee.\n\n"
+                 . "Thank you.\n"
+                 . "{$school->name}";
 
-        // Send to Mother (Backup)
+        // Primary: Father
+        $this->sendMessage($student->father_whatsapp ?? $student->phone, $message);
+        
+        // Backup: Mother
         if ($student->mother_whatsapp) {
             $this->sendMessage($student->mother_whatsapp, $message);
         }
+
+        // Optional: Student
+        if ($student->student_whatsapp) {
+            $this->sendMessage($student->student_whatsapp, $message);
+        }
+
+        $invoice->status = 'sent';
+        $invoice->save();
+
+        return true;
+    }
+
+    /**
+     * Mock function for sending a message.
+     */
+    protected function sendMessage($number, $message)
+    {
+        if (empty($number)) return false;
+
+        Log::info("WhatsApp Message Sent to {$number}: {$message}");
+        
+        // In a real scenario, you would call an API here.
+        // Example: Http::post('https://api.whatsapp.com/send', [...]);
+        
+        return true;
     }
 }

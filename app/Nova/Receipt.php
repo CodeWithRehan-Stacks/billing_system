@@ -2,28 +2,28 @@
 
 namespace App\Nova;
 
-use Illuminate\Http\Request;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Select;
-use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\DateTime;
+use Laravel\Nova\Fields\File;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
-class School extends Resource
+class Receipt extends Resource
 {
     /**
      * The model the resource corresponds to.
      *
-     * @var class-string<\App\Models\School>
+     * @var string
      */
-    public static $model = \App\Models\School::class;
+    public static $model = \App\Models\Receipt::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
      *
      * @var string
      */
-    public static $title = 'name';
+    public static $title = 'receipt_number';
 
     /**
      * The columns that should be searched.
@@ -31,7 +31,7 @@ class School extends Resource
      * @var array
      */
     public static $search = [
-        'id', 'name', 'subdomain',
+        'id', 'receipt_number',
     ];
 
     /**
@@ -45,27 +45,31 @@ class School extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Name')
+            BelongsTo::make('School', 'school', School::class)
+                ->sortable(),
+
+            BelongsTo::make('Invoice', 'invoice', FeeInvoice::class)
+                ->sortable(),
+
+            Text::make('Receipt Number', 'receipt_number')
                 ->sortable()
-                ->rules('required', 'max:255'),
+                ->readonly(),
 
-            Text::make('Subdomain')
+            Text::make('File Path', 'file_path')
+                ->onlyOnDetail(),
+
+            // Add a way to download the file
+            Text::make('Download', function () {
+                if ($this->file_path) {
+                    $url = \Illuminate\Support\Facades\Storage::disk('public')->url($this->file_path);
+                    return '<a href="' . $url . '" target="_blank" class="no-underline dim text-primary font-bold">Download PDF</a>';
+                }
+                return 'No file';
+            })->asHtml()->exceptOnForms(),
+
+            DateTime::make('Generated At', 'generated_at')
                 ->sortable()
-                ->rules('required', 'max:255')
-                ->creationRules('unique:schools,subdomain')
-                ->updateRules('unique:schools,subdomain,{{resourceId}}'),
-
-            Text::make('Address')
-                ->hideFromIndex(),
-
-            Select::make('Status')->options([
-                'active' => 'Active',
-                'inactive' => 'Inactive',
-            ])->default('active')->sortable(),
-
-            HasMany::make('Users'),
-            HasMany::make('Students'),
-            HasMany::make('Invoices', 'invoices', FeeInvoice::class),
+                ->readonly(),
         ];
     }
 

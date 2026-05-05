@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\InvoiceGenerationService;
+use App\Services\InvoiceService;
 
 class GenerateMonthlyInvoices extends Command
 {
@@ -12,26 +12,27 @@ class GenerateMonthlyInvoices extends Command
      *
      * @var string
      */
-    protected $signature = 'invoices:generate-monthly';
+    protected $signature = 'invoices:generate {--school_id= : The ID of the school}';
 
     /**
-     * The console command description.
+     * The description of the console command.
      *
      * @var string
      */
-    protected $description = 'Generate monthly fee invoices for all active students and apply late fees';
+    protected $description = 'Generate monthly invoices for active students';
 
     /**
      * Execute the console command.
      */
-    public function handle(InvoiceGenerationService $invoiceService)
+    public function handle(InvoiceService $invoiceService)
     {
-        $this->info('Applying late fees to overdue invoices...');
-        $invoiceService->applyLateFees();
+        $this->info('Generating invoices...');
+        $results = $invoiceService->generateMonthlyInvoices($this->option('school_id'));
         
-        $this->info('Generating monthly invoices...');
-        $invoiceService->generateMonthlyInvoices();
+        foreach ($results as $schoolId => $data) {
+            $this->info("School: {$data['name']} - Generated: {$data['generated']}");
+        }
         
-        $this->info('Invoices generation process complete!');
+        $this->info('Invoice generation completed.');
     }
 }

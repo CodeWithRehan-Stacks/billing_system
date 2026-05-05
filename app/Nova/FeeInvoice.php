@@ -10,11 +10,13 @@ use Laravel\Nova\Fields\Badge;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Currency;
 use Laravel\Nova\Fields\Date;
+use Laravel\Nova\Fields\DateTime;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
 class FeeInvoice extends Resource
@@ -41,6 +43,10 @@ class FeeInvoice extends Resource
     {
         return [
             ID::make()->sortable(),
+
+            BelongsTo::make('School', 'school', School::class)
+                ->sortable()
+                ->rules('required'),
 
             Text::make('Invoice Number', 'invoice_number')
                 ->sortable()
@@ -70,6 +76,15 @@ class FeeInvoice extends Resource
                 ->sortable()
                 ->rules('required', 'date'),
 
+            Currency::make('Base Amount', 'base_amount')
+                ->sortable()
+                ->currency('PKR')
+                ->rules('required', 'numeric', 'min:0'),
+
+            Currency::make('Late Fee', 'late_fee')
+                ->currency('PKR')
+                ->nullable(),
+
             Currency::make('Total Amount', 'total_amount')
                 ->sortable()
                 ->currency('PKR')
@@ -87,14 +102,18 @@ class FeeInvoice extends Resource
                 ->hideWhenCreating()
                 ->hideWhenUpdating(),
 
-            Currency::make('Late Fee', 'late_fee')
-                ->currency('PKR')
-                ->nullable()
+            Boolean::make('Late Fee Applied', 'late_fee_applied')
+                ->readonly()
+                ->hideFromIndex(),
+
+            DateTime::make('Late Fee Applied At', 'late_fee_applied_at')
+                ->readonly()
                 ->hideFromIndex(),
 
             Select::make('Status')
                 ->options([
                     'pending'  => 'Pending',
+                    'sent'     => 'Sent',
                     'partial'  => 'Partial',
                     'paid'     => 'Paid',
                     'overdue'  => 'Overdue',
@@ -105,6 +124,7 @@ class FeeInvoice extends Resource
 
             Badge::make('Status')->map([
                 'pending' => 'warning',
+                'sent'    => 'info',
                 'partial' => 'info',
                 'paid'    => 'success',
                 'overdue' => 'danger',
@@ -141,6 +161,7 @@ class FeeInvoice extends Resource
         return [
             new MarkAsPaid,
             new MarkAsOverdue,
+            new \App\Nova\Actions\ResendWhatsAppNotification,
         ];
     }
 }

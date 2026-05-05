@@ -27,23 +27,19 @@ class Main extends Dashboard
     public function cards(): array
     {
         return [
-            // Row 1 — Student KPIs
-            TotalStudents::make()->width('1/4'),
-            ActiveStudents::make()->width('1/4'),
+            // Row 1 — Student & Revenue KPIs
+            TotalStudents::make()->width('1/3'),
+            TotalRevenue::make()->width('1/3'),
+            \App\Nova\Metrics\RevenueExpected::make()->width('1/3'),
 
-            // Row 1 — Invoice KPIs
-            TotalInvoices::make()->width('1/4'),
-            TotalRevenue::make()->width('1/4'),
-
-            // Row 2 — Status KPIs
+            // Row 2 — Collections & Status
             PendingInvoices::make()->width('1/4'),
             OverdueInvoices::make()->width('1/4'),
-
-            // Row 2 — Charts
             InvoiceStatusPartition::make()->width('1/2'),
 
-            // Row 3 — Trend
-            RevenueByMonth::make()->width('full'),
+            // Row 3 — Trends
+            RevenueByMonth::make()->width('2/3'),
+            TotalInvoices::make()->width('1/3'),
         ];
     }
 }

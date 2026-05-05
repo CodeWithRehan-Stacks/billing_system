@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FeeInvoice extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToSchool;
 
     protected $fillable = [
-        'invoice_number', 'student_id', 'month', 'year', 'issue_date', 'due_date',
-        'total_amount', 'paid_amount', 'late_fee', 'status', 'late_fee_applied'
+        'school_id', 'invoice_number', 'student_id', 'month', 'year', 'issue_date', 'due_date',
+        'base_amount', 'total_amount', 'paid_amount', 'late_fee', 'status', 'late_fee_applied', 'late_fee_applied_at'
     ];
 
     protected $appends = ['remaining_amount'];
@@ -24,11 +25,6 @@ class FeeInvoice extends Model
     public function student()
     {
         return $this->belongsTo(Student::class);
-    }
-
-    public function items()
-    {
-        return $this->hasMany(InvoiceItem::class);
     }
 
     public function payments()

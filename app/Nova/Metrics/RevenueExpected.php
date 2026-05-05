@@ -6,16 +6,16 @@ use App\Models\FeeInvoice;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Metrics\Value;
 
-class TotalRevenue extends Value
+class RevenueExpected extends Value
 {
     public function name(): string
     {
-        return 'Total Revenue (This Month)';
+        return 'Expected Revenue (Total Invoiced)';
     }
 
     public function calculate(NovaRequest $request): \Laravel\Nova\Metrics\ValueResult
     {
-        return $this->sum($request, \App\Models\FeePayment::class, 'amount', 'payment_date')
+        return $this->sum($request, FeeInvoice::class, 'total_amount')
             ->currency('PKR')
             ->prefix('PKR ');
     }
@@ -24,11 +24,7 @@ class TotalRevenue extends Value
     {
         return [
             30 => '30 Days',
-            60 => '60 Days',
-            365 => '365 Days',
             'MTD' => 'Month To Date',
-            'QTD' => 'Quarter To Date',
-            'YTD' => 'Year To Date',
         ];
     }
 
@@ -37,5 +33,5 @@ class TotalRevenue extends Value
         return now()->addMinutes(10);
     }
 
-    public $uriKey = 'total-revenue';
+    public $uriKey = 'revenue-expected';
 }

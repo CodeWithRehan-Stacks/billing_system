@@ -13,6 +13,8 @@ use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
+use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\Currency;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
 
@@ -41,6 +43,10 @@ class Student extends Resource
         return [
             ID::make()->sortable(),
 
+            BelongsTo::make('School', 'school', School::class)
+                ->sortable()
+                ->rules('required'),
+
             Panel::make('Personal Information', [
                 Text::make('Name', 'name')
                     ->sortable()
@@ -50,16 +56,29 @@ class Student extends Resource
                     ->sortable()
                     ->rules('nullable', 'string', 'max:255'),
 
+                Text::make('Mother Name', 'mother_name')
+                    ->sortable()
+                    ->rules('nullable', 'string', 'max:255'),
+
                 Text::make('Phone')
                     ->nullable()
                     ->rules('nullable', 'string', 'max:20'),
+                
+                Text::make('Student WhatsApp', 'student_whatsapp')
+                    ->nullable(),
+                
+                Text::make('Father WhatsApp', 'father_whatsapp')
+                    ->nullable(),
+                
+                Text::make('Mother WhatsApp', 'mother_whatsapp')
+                    ->nullable(),
 
                 Textarea::make('Address')
                     ->nullable()
                     ->hideFromIndex(),
             ]),
 
-            Panel::make('Academic Information', [
+            Panel::make('Academic & Fee Information', [
                 Select::make('Class')
                     ->options(function () {
                         $classes = [];
@@ -90,6 +109,11 @@ class Student extends Resource
                     ->creationRules('nullable', 'string', 'unique:students,roll_number')
                     ->updateRules('nullable', 'string', 'unique:students,roll_number,{{resourceId}}')
                     ->help('Must be unique.'),
+
+                Currency::make('Monthly Fee', 'monthly_fee')
+                    ->currency('PKR')
+                    ->rules('required', 'numeric')
+                    ->sortable(),
 
                 Date::make('Admission Date', 'admission_date')
                     ->nullable()

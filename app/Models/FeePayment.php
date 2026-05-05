@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToSchool;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class FeePayment extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToSchool;
 
     protected $fillable = [
-        'fee_invoice_id', 'student_id', 'amount', 'payment_method',
+        'school_id', 'fee_invoice_id', 'student_id', 'amount', 'payment_method',
         'payment_date', 'transaction_id', 'notes'
     ];
 
@@ -41,16 +42,22 @@ class FeePayment extends Model
             $totalPaid = $this->invoice->payments()->sum('amount');
             $this->invoice->paid_amount = $totalPaid;
             
+            $oldStatus = $this->invoice->status;
+
             if ($totalPaid >= $this->invoice->total_amount) {
                 $this->invoice->status = 'paid';
             } elseif ($totalPaid > 0) {
                 $this->invoice->status = 'partial';
             } else {
-                // If past due date, might need to be overdue, but let's default to pending if 0
                 $this->invoice->status = 'pending';
             }
             
             $this->invoice->save();
+
+            // Trigger receipt generation if status just changed to paid or if it's a new payment on a paid invoice
+            if ($this->invoice->status === 'paid') {
+                app(\App\Services\ReceiptService::class)->generateReceipt($this);
+            }
         }
     }
 }

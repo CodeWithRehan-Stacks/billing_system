@@ -1,0 +1,117 @@
+<?php
+
+namespace App\Nova;
+
+use Illuminate\Http\Request;
+use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Fields\Select;
+use Laravel\Nova\Fields\HasMany;
+use Laravel\Nova\Http\Requests\NovaRequest;
+
+class School extends Resource
+{
+    /**
+     * The model the resource corresponds to.
+     *
+     * @var class-string<\App\Models\School>
+     */
+    public static $model = \App\Models\School::class;
+
+    /**
+     * The single value that should be used to represent the resource when being displayed.
+     *
+     * @var string
+     */
+    public static $title = 'name';
+
+    /**
+     * The columns that should be searched.
+     *
+     * @var array
+     */
+    public static $search = [
+        'id', 'name', 'subdomain',
+    ];
+
+    /**
+     * Get the fields displayed by the resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @return array
+     */
+    public function fields(NovaRequest $request)
+    {
+        return [
+            ID::make()->sortable(),
+
+            Text::make('Name')
+                ->sortable()
+                ->rules('required', 'max:255'),
+
+            Text::make('Subdomain')
+                ->sortable()
+                ->rules('required', 'max:255')
+                ->creationRules('unique:schools,subdomain')
+                ->updateRules('unique:schools,subdomain,{{resourceId}}'),
+
+            Text::make('Address')
+                ->hideFromIndex(),
+
+            Select::make('Status')->options([
+                'active' => 'Active',
+                'inactive' => 'Inactive',
+            ])->default('active')->sortable(),
+
+            HasMany::make('Users'),
+            HasMany::make('Students'),
+            HasMany::make('Invoices', 'invoices', FeeInvoice::class),
+        ];
+    }
+
+    /**
+     * Get the cards available for the request.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @return array
+     */
+    public function cards(NovaRequest $request)
+    {
+        return [];
+    }
+
+    /**
+     * Get the filters available for the resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @return array
+     */
+    public function filters(NovaRequest $request)
+    {
+        return [];
+    }
+
+    /**
+     * Get the lenses available for the resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @return array
+     */
+    public function lenses(NovaRequest $request)
+    {
+        return [];
+    }
+
+    /**
+     * Get the actions available for the resource.
+     *
+     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @return array
+     */
+    public function actions(NovaRequest $request)
+    {
+        return [
+            new \App\Nova\Actions\GenerateFinancialReport,
+        ];
+    }
+}
