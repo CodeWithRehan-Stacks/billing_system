@@ -1,7 +1,6 @@
-/* ===== IMPROVED CSS FOR NONA DASHBOARD ===== */
-/* Adds transitions, animations, and theme enhancements while preserving original dark theme */
+/* 1. Google Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* CSS Custom Properties for theme management */
 :root {
     --primary: #3b82f6;
     --primary-glow: rgba(59, 130, 246, 0.4);
@@ -14,12 +13,46 @@
     --text-secondary: #94a3b8;
     --transition-default: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-smooth: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.3);
+    
+    /* Nova Custom Spacing */
+    --header-height: 80px; 
 }
 
-/* ===== GLOBAL ===== */
+/* Nova Logo Container Fix */
+header[dusk="header"] a[href="/nova/dashboards/main"] svg, 
+header[dusk="header"] .novalogo {
+    height: 40px !important; /* Logo ki height barhane ke liye */
+    width: auto !important;
+    transition: var(--transition-smooth);
+}
+
+/* Logo hover effect */
+header[dusk="header"] a[href="/nova/dashboards/main"]:hover svg {
+    filter: drop-shadow(0 0 8px var(--primary-glow));
+    transform: scale(1.05);
+}
+
+/* Agar aapne text wala logo use kiya hai */
+header[dusk="header"] .text-90 {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.025em;
+    color: var(--text-primary) !important;
+}
+/* --- SIDEBAR & CONTENT ALIGNMENT --- */
+/* Header ki height barhne se sidebar aur content ko niche dhakelnay ke liye */
+aside.w-60 {
+    padding-top: 1rem;
+}
+
+/* Main content container adjustment */
+main.py-8 {
+    padding-top: 2.5rem !important;
+}
+
+/* --- GLOBAL STYLES --- */
 body {
     background: var(--bg-base) !important;
     color: var(--text-primary);
@@ -27,413 +60,42 @@ body {
     animation: fadeIn 0.5s ease-out;
 }
 
-/* Subtle background depth enhancement */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.06), transparent 60%);
-    z-index: -1;
-}
-
-/* ===== SIDEBAR ===== */
-aside {
+/* Nova Cards Styling */
+.bg-white, [v-cloak] .card, .card {
     background: var(--bg-surface) !important;
-    border-right: 1px solid var(--border-subtle);
-    transition: var(--transition-default);
-}
-
-/* Sidebar links - enhanced transitions */
-aside a {
-    color: var(--text-secondary) !important;
-    transition: var(--transition-default);
-    position: relative;
-    overflow: hidden;
-}
-
-aside a:hover {
-    color: #fff !important;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    transform: translateX(2px);
-}
-
-/* Active menu with glowing indicator */
-aside .router-link-active {
-    background: var(--bg-elevated) !important;
-    color: #fff !important;
-    box-shadow: inset 3px 0 0 var(--primary);
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow-sm);
     transition: var(--transition-smooth);
-}
-
-/* ===== HEADER ===== */
-header[dusk="header"] {
-    background: rgba(15, 23, 42, 0.7) !important;
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-subtle);
-    transition: var(--transition-default);
-}
-
-/* ===== CARDS / PANELS - Enhanced with hover effects & animations ===== */
-.bg-white {
-    background: var(--bg-surface) !important;
-    border: 1px solid var(--border-subtle);
-    border-radius: 12px;
-    transition: var(--transition-smooth);
-    animation: fadeInUp 0.4s ease-out backwards;
-    animation-fill-mode: both;
-}
-
-/* Staggered animation for cards */
-.bg-white:nth-child(1) {
-    animation-delay: 0.05s;
-}
-
-.bg-white:nth-child(2) {
-    animation-delay: 0.10s;
-}
-
-.bg-white:nth-child(3) {
-    animation-delay: 0.15s;
-}
-
-.bg-white:nth-child(4) {
-    animation-delay: 0.20s;
-}
-
-.bg-white:nth-child(5) {
-    animation-delay: 0.25s;
-}
-
-.bg-white:nth-child(6) {
-    animation-delay: 0.30s;
 }
 
 .bg-white:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: rgba(59, 130, 246, 0.3);
-}
-
-/* Panel / Card inner containers */
-.card,
-.panel {
-    transition: var(--transition-smooth);
-}
-
-/* ===== TABLE - Enhanced rows ===== */
-table {
-    background: transparent !important;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-tr {
-    border-bottom: 1px solid var(--border-subtle);
-    transition: var(--transition-default);
-}
-
-tr:hover {
-    background: rgba(59, 130, 246, 0.05);
-    transform: scale(1.002);
-}
-
-th,
-td {
-    transition: var(--transition-default);
-    padding: 12px 16px;
-}
-
-/* ===== BUTTONS - Interactive animations ===== */
-button,
-.btn {
-    border-radius: 8px !important;
-    transition: var(--transition-smooth);
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-button:active,
-.btn:active {
-    transform: scale(0.97);
-}
-
-button:hover,
-.btn:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.05);
-}
-
-button.bg-primary,
-.btn-primary {
-    background: var(--primary) !important;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-button.bg-primary:hover,
-.btn-primary:hover {
-    box-shadow: var(--shadow-glow);
-    background: #2563eb !important;
-}
-
-/* Ripple effect on buttons */
-button::after,
-.btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    transform: translate(-50%, -50%);
-    transition: width 0.4s ease-out, height 0.4s ease-out;
-}
-
-button:active::after,
-.btn:active::after {
-    width: 200%;
-    height: 200%;
-    opacity: 0;
-}
-
-/* ===== INPUTS - Focus animations & glow ===== */
-input,
-select,
-textarea {
-    background: #020617 !important;
-    border: 1px solid var(--border-medium) !important;
-    color: var(--text-primary) !important;
-    border-radius: 8px;
-    transition: var(--transition-default);
-}
-
-input:focus,
-select:focus,
-textarea:focus {
-    border-color: var(--primary) !important;
-    box-shadow: 0 0 0 3px var(--primary-glow);
-    outline: none;
-    transform: scale(1.01);
-}
-
-/* ===== SCROLLBAR - Custom themed scrollbar ===== */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-base);
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(59, 130, 246, 0.4);
-    border-radius: 10px;
-    transition: var(--transition-default);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(59, 130, 246, 0.7);
-}
-
-/* ===== FOOTER HIDE ===== */
-footer {
-    display: none !important;
-}
-
-/* ===== CUSTOM FOOTER - Enhanced ===== */
-.custom-footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(15, 23, 42, 0.8);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid var(--border-subtle);
-    color: var(--text-secondary);
-    text-align: center;
-    padding: 10px;
-    font-size: 12px;
-    transition: var(--transition-default);
-    z-index: 10;
-}
-
-.custom-footer:hover {
-    background: rgba(15, 23, 42, 0.95);
-    color: var(--text-primary);
-}
-
-.leading-normal {
-    display: none !important;
-}
-
-/* ===== ANIMATION KEYFRAMES ===== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 var(--primary-glow);
-    }
-
-    70% {
-        box-shadow: 0 0 0 8px rgba(59, 130, 246, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-
-    100% {
-        background-position: 200% 0;
-    }
-}
-
-/* Loading skeleton animation for placeholder states */
-.skeleton-loading {
-    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-elevated) 50%, var(--bg-surface) 75%);
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-    border-radius: 4px;
-}
-
-/* ===== STATUS INDICATOR / BADGE ANIMATIONS ===== */
-.badge,
-.status-indicator {
-    transition: var(--transition-default);
-}
-
-.badge-success,
-.status-online {
-    animation: pulse 2s infinite;
-}
-
-/* ===== DROPDOWN & MODAL ENHANCEMENTS ===== */
-.dropdown-menu,
-.modal-content {
-    animation: fadeInUp 0.2s ease-out;
-    transition: var(--transition-default);
-}
-
-/* ===== SIDEBAR COLLAPSE TRANSITION (if applicable) ===== */
-.sidebar-collapsed {
-    transition: width 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-}
-
-/* ===== TOAST / NOTIFICATION ANIMATIONS ===== */
-.toast,
-.notification {
-    animation: slideInRight 0.3s ease-out forwards;
-    transition: var(--transition-default);
-}
-
-.toast:hover,
-.notification:hover {
-    transform: translateX(-2px);
-}
-
-/* ===== PROGRESS BARS & LOADERS ===== */
-.progress-bar {
-    transition: width 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-    background: var(--primary);
-    position: relative;
-    overflow: hidden;
-}
-
-.progress-bar::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    animation: shimmer 1.5s infinite;
-}
-
-/* ===== CHART / STAT CARD HOVER IMPROVEMENTS ===== */
-.stat-card,
-.metric-card {
-    transition: var(--transition-smooth);
-}
-
-.stat-card:hover,
-.metric-card:hover {
     transform: translateY(-3px);
+    border-color: var(--primary-glow) !important;
     box-shadow: var(--shadow-md);
 }
 
-/* ===== RESPONSIVE TOUCH IMPROVEMENTS ===== */
-@media (max-width: 768px) {
-
-    button,
-    .btn,
-    a,
-    .clickable {
-        transition: var(--transition-default);
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    button:active,
-    .btn:active {
-        transform: scale(0.96);
-    }
+/* Hiding default Nova footers and unnecessary labels */
+footer, .uppercase, .leading-normal {
+    display: none !important;
 }
 
-/* ===== REDUCED MOTION PREFERENCE ===== */
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
+/* Sidebar Active Link Style */
+aside a.router-link-active {
+    background: var(--bg-elevated) !important;
+    color: #fff !important;
+    border-left: 4px solid var(--primary);
+    border-radius: 0 8px 8px 0;
 }
+
+/* Custom Scrollbar for Dark Theme */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { 
+    background: var(--primary); 
+    border-radius: 10px; 
+    opacity: 0.5;
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
